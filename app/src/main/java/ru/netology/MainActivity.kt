@@ -2,12 +2,16 @@ package ru.netology
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import ru.netology.databinding.ActivityMainBinding
+import ru.netology.viewModel.PostViewModel
 import java.math.RoundingMode
 import java.text.DecimalFormat
 
 class MainActivity : AppCompatActivity() {
+
+    private val viewModel by viewModels<PostViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -15,24 +19,16 @@ class MainActivity : AppCompatActivity() {
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val post = Post(
-            id = 0L,
-            author = "Нетология. Меняем карьеру через образование",
-            content = "Привет, это новая Нетология! Когда-то Нетология начиналась с интенсовов по онлайн-маркетингу. Затем появились курсы по дизайну, разработке, аналитике и управлению. Мы растем сами и помогаем расти студентам: от новичков до уверенных профессионалов. Но самое важное остается с нами: мы верим, что в каждом уже есть сила, которая заставляет хотеть больше, целиться выше, бежать быстрее. Наша миссия - помочь встать на путь роста и начать цепочку перемен → http://netolo.gy/fyb",
-            published = "10.05.2022 в 16:41"
-        )
+        viewModel.data.observe(this) { post ->
+            binding.render(post)
+        }
 
-        binding.render(post)
         binding.likesIcon.setOnClickListener {
-            post.likedByMe = !post.likedByMe
-            binding.likesIcon.setImageResource(getLikeIconResId(post.likedByMe))
-            binding.likesCount.setText(calculate(post.likes, post.likedByMe))
-            post.likes = if (post.likedByMe) post.likes++ else post.likes
+            viewModel.onLikeClicked()
         }
 
         binding.repostIcon.setOnClickListener {
-            post.shared++
-            binding.repostCount.setText(numberConversion(post.shared))
+            viewModel.onRepostClicked()
         }
     }
 
