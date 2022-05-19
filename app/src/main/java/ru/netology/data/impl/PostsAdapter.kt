@@ -13,23 +13,27 @@ import java.math.RoundingMode
 import java.text.DecimalFormat
 import kotlin.properties.Delegates
 
+typealias OnPostLikeClicked = (Post) -> Unit
+
 internal class PostsAdapter(
-    private val  onLikeClicked: (Post) -> Unit,
-    private val  onRepostClicked: (Post) -> Unit
+    private val  onLikeClicked: OnPostLikeClicked,
+    private val  onRepostClicked: OnPostLikeClicked
 ) : ListAdapter<Post, PostsAdapter.ViewHolder>(DiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = PostBinding.inflate(inflater, parent, false)
-        return ViewHolder(binding)
+        return ViewHolder(binding, onLikeClicked, onRepostClicked)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(getItem(position))
     }
 
-    inner class ViewHolder(
-        private val binding: PostBinding
+    class ViewHolder(
+        private val binding: PostBinding,
+        onLikeClicked: OnPostLikeClicked,
+        private val  onRepostClicked: (Post) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 
         private lateinit var post: Post
