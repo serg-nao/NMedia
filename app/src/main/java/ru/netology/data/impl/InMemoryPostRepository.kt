@@ -27,7 +27,7 @@ class InMemoryPostRepository : PostRepository {
             if (it.id != postId) it
             else it.copy(
                 likedByMe = !it.likedByMe,
-                likes = it.likes + 1
+                likes = if (it.likedByMe) it.likes - 1 else it.likes + 1
             )
         }
     }

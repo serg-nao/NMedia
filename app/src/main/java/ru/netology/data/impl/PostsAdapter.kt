@@ -33,7 +33,7 @@ internal class PostsAdapter(
     class ViewHolder(
         private val binding: PostBinding,
         onLikeClicked: OnPostLikeClicked,
-        private val  onRepostClicked: (Post) -> Unit
+        private val  onRepostClicked: OnPostLikeClicked
     ) : RecyclerView.ViewHolder(binding.root) {
 
         private lateinit var post: Post
@@ -53,20 +53,14 @@ internal class PostsAdapter(
                 content.text = post.content
                 date.text = post.published
                 likesIcon.setImageResource(getLikeIconResId(post.likedByMe))
-                likesCount.text = calculate(post.likes, post.likedByMe)
+                likesCount.text = numberConversion(post.likes)
                 repostCount.text = numberConversion(post.shared)
             }
-
         }
 
         @DrawableRes
         private fun getLikeIconResId(liked: Boolean) =
             if (liked) R.drawable.ic_baseline_favorite_24 else R.drawable.ic_baseline_favorite_border_24
-
-        private fun calculate(currentLikes: Int, liked: Boolean): String {
-            val likes = if (!liked) currentLikes else currentLikes + 1
-            return numberConversion(likes)
-        }
 
         private fun numberConversion(number: Int): String {
             val numberConverted: String
