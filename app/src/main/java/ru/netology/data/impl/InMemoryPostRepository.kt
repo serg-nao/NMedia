@@ -7,8 +7,10 @@ import ru.netology.data.PostRepository
 
 class InMemoryPostRepository : PostRepository {
 
+    private var nextId = GENERATED_POST_AMOUNT.toLong()
+
     override val data = MutableLiveData(
-        List(10) { index ->
+        List(GENERATED_POST_AMOUNT) { index ->
             Post(
                 id = index + 1L,
                 author = "Нетология. Меняем карьеру через образование",
@@ -39,5 +41,29 @@ class InMemoryPostRepository : PostRepository {
                 shared = it.shared + 1
             )
         }
+    }
+
+    override fun delete(postId: Long) {
+        data.value = posts.filter { it.id != postId }
+    }
+
+    override fun save(post: Post) {
+        if (post.id == PostRepository.NEW_POST_ID) insert(post) else update(post)
+    }
+
+    private fun insert(post: Post) {
+        data.value = listOf(
+            post.copy( id = ++nextId )
+        ) + posts
+    }
+
+    private fun update(post: Post) {
+        data.value = posts.map {
+            if (it.id == post.id) post else it
+        }
+    }
+
+    private companion object {
+        const val GENERATED_POST_AMOUNT = 10
     }
 }
